@@ -55,4 +55,44 @@ When managing Docker images, the usual solution to remove an image is by using t
 
 By using these approaches, you can efficiently remove multiple Docker images without the need to manually remove them one by one using their image IDs. Choose the method that best fits your needs based on the number of images you have and the criteria for removal.
 
+### Shortcut Solution: Delete Invalid Images
 
+To efficiently delete all invalid images with the name/tag "none," you can execute the following command:
+
+```
+docker images | grep none | tr -s ' ' | cut -d ' ' -f 3 | xargs -I {} docker rmi -f {}
+```
+
+Let's delve into the explanation of each command and gain a deeper understanding of Linux along the way.
+
+1. `grep`:
+   The initial part of the command, `docker images`, lists all the images. By adding `grep none`, we filter the images to display only those containing the word "none." This allows us to identify all the invalid images using this command. The `grep` command is highly versatile and enables us to implement custom logic for removing Docker images.
+
+   Example:
+   ```
+   $ docker images | grep none
+   ```
+
+2. `tr`:
+   The next command, `tr -s ' '`, squeezes the string by collapsing consecutive spaces into a single space. Since there might be multiple spaces between the name, tag, and image ID, this command helps minimize the spacing between them.
+
+   Example:
+   After executing this command, the names are uniformly spaced.
+
+3. `cut`:
+   The `cut -d ' ' -f 3` command allows us to extract a specific part of the input string. With the `-d ' '` option, we set the delimiter as a space. By specifying `-f 3`, we indicate that we want the third part of the string.
+
+   Example:
+   Running this command will provide a list of all image IDs with the tag "none."
+
+4. `xargs`:
+   The final part of the command is `xargs -I {} docker rmi -f {}`. This command takes the output from a preceding command and supplies it as input to another command. In our case, we utilize the list of IMAGE IDs as input for `docker rmi -f`, which forcefully removes Docker images.
+
+   Example:
+   After executing the entire command, you will observe that all unwanted images have been deleted.
+
+   You can verify this by using the command `docker images` again, which will confirm the removal of all undesired images.
+
+   Feel free to experiment with the command if you require different types of filtering by modifying the initial `grep` command. It supports filtering with regular expressions as well.
+
+That's all for today! Happy automating and deploying! 🚀
